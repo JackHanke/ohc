@@ -1,0 +1,500 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{tikz}
+%\usepackage{subfig}
+\usepackage[english]{babel}
+%\usepackage{capt-of}
+\newtheorem{theorem}{Theorem}
+\usetikzlibrary{calc}
+\usetikzlibrary{shapes}
+\usepackage{hyperref}
+%might be unnecessary
+\usepackage{doi}
+%bibliography CMDS
+
+\usepackage{filecontents}
+\begin{filecontents*}{ohcrefs.bib}
+
+@article{klarner_1967, 
+title={Cell Growth Problems}, 
+volume={19}, DOI={10.4153/CJM-1967-080-4}, 
+journal={Canadian Journal of Mathematics}, 
+publisher={Cambridge University Press}, 
+author={Klarner, David A.}, 
+year={1967}, 
+pages={851–863}}
+
+@misc{minecraftwiki, 
+title={Tick}, 
+url={https://minecraft.fandom.com/wiki/Tick}, 
+journal={Minecraft Wiki}} 
+
+@article{_api_ski_2019,
+doi = {10.1016/j.jat.2019.105305},
+url = {https://doi.org/10.1016%2Fj.jat.2019.105305},
+year = 2019,
+month = {dec},
+publisher = {Elsevier {BV}
+},
+volume = {248},
+pages = {105305},
+author = {Tomasz M. {\L}api{\'{n}}ski},
+title = {Multivariate Laplace's approximation with estimated error and application to limit theorems},
+journal = {Journal of Approximation Theory}
+}}
+
+\end{filecontents*}
+
+\usepackage[style=alphabetic]{biblatex}
+\addbibresource{ohcrefs.bib}
+
+%%% With amsthm package, creates environments for nicely formatted,
+%%% labeled, and numbered propositions, etc.
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}
+\newtheorem{lemma}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{conj}[thm]{Conjecture}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{claim}[thm]{Claim}
+\newtheorem{fact}[thm]{Fact}
+
+\theoremstyle{definition}
+\newtheorem{eg}[thm]{Example}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{rem}[thm]{Remark}
+\newtheorem{observ}[thm]{Observation}
+\newtheorem{open}[thm]{Open Problem}
+\newtheorem{prob.}[thm]{Problem}
+\newtheorem{quest}[thm]{Question}
+
+% I used these for making definitions and theorems, not what is above
+\theoremstyle{remark}
+\newtheorem{remark}[thm]{Remark}
+\newtheorem{note}[thm]{Note}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{exmp}{Example}[section]
+
+%nice quick solution
+\usepackage[margin=1in]{geometry}
+
+%doc info
+\title{Optimal Harvest Constants}
+\author{Jack Hanke}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+Let $X_{m,p} \sim B(tm,p)$ be a discrete random variable with parameters $m$, called the ``speed", and $p$, called the ``hit-rate". We are interested in the following function
+\begin{equation}\label{eq: Lambda def}
+    \Lambda_{m,p}(n) = \max_{t} \frac{1}{t}\mathbb{P}(X_{m,p} \geq n) = \max_{t} \frac{1}{t}\left(1-(1-p)^{mt-n+1}\sum_{k=0}^{n-1}p^k  \binom{mt}{k}\right).
+\end{equation}
+
+It turns out that $\Lambda_{3,2^{-12}}(n)$ is an important function in Minecraft farm optimization. For studying Minecraft, approximating $X_{m,p}$ with a Poisson random variable  $Y \sim \text{Poisson}(t)$ is appropriate. We then define the corresponding function for $Y$, namely 
+
+\begin{equation}\label{eq: lambda def}
+    \lambda(n) = \max_t \frac{1}{t}\mathbb{P}(Y \geq n) = \max_t \frac{1}{t}\left(1-e^{-t}\sum_{k=0}^{n-1}\frac{t^k}{k!}\right)
+\end{equation}
+
+We then have for large $n$ and small $p$
+\begin{equation}
+    \Lambda_{m,p}(n) \approx \frac{1}{mp}\lambda(n).
+\end{equation}
+
+\begin{eqnarray*}
+    0 & = & (1-p)^{n-1}e^{-m\ln(1-p)t} + \frac{(p)^{n-1}}{(n-1)!}\ln(1-p)(mt)^n -1 \\
+    & + & \sum_{k=1}^{n-1}\left(\frac{\ln(1-p)p^{k-1}}{(k-1)!} + \sum_{i=k}^{n-1}((k-1)s(i,k)+\ln(1-p)s(i,k-1))\frac{p^i}{i!}\right)(mt)^k,
+\end{eqnarray*}
+
+and similarly $\lambda(n)$ is the $t>0$ that solves
+
+\begin{equation*}
+    0 = e^t - \frac{t^n}{(n-1)!} - \sum_{k=0}^{n-1}\frac{t^k}{k!}.
+\end{equation*}
+
+Clearly root finding algorithms provide solutions to the above equations. See below for small values of $n$
+
+\begin{center}
+\begin{tabular}{| c | c | c | c | c |}
+\hline
+ $n$ & $\lambda(n)$ & $(2^{12}/3)\lambda(n)$ & $\Lambda_{3,2^{-12}}(n)$ & Opimal Tick\\ 
+ \hline
+1 & 0 & 0 & 0 & 1\\ 
+2 & 1.7932821329 & 2448.4278721205 & 2449.1597630796 & 2449\\
+3 & 3.3836342829 & 4619.7886741889 & 4620.6492653516 & 4621\\
+4 & 4.8812774913 & 6664.5708681839 & 6665.5420888695 & 6666\\
+5 & 6.3225055510 & 8632.3275790109 & 8633.3997579089 & 8633\\
+6 & 7.7245836004 & 10546.6314757967 & 10547.7982629752 & 10548\\
+7 & 9.0973444026 & 12420.9075576501 & 12422.1643509140 & 12422\\
+8 & 10.4470306813 & 14263.6792235702 & 14265.0224812591 & 14265\\
+9 & 11.7779066065 & 16080.7684866791 & 16082.1953698680 & 16082\\
+10 & 13.0930424983 & 17876.3673576602 & 17877.8755221598 & 17878\\
+11 & 14.3947389019 & 19653.6168474178 & 19655.2043132205 & 19655\\
+12 & 15.6847741726 & 21414.9450036956 & 21416.6100682348 & 21417\\
+13 & 16.9645579170 & 23162.2764093484 & 23164.0175872686 & 23164\\
+14 & 18.2352307260 & 24897.1683511953 & 24898.9843310297 & 24899\\
+15 & 19.4977315702 & 26620.9028372304 & 26622.7924493235 & 26623\\
+ \hline
+\end{tabular}
+\end{center}
+
+We are interested in exact expressions for $\Lambda_{m,p}(n)$ and $\lambda(n)$. First note that both definitions are of the form 
+
+\begin{equation*}\label{eq: base eq}
+    0 = b_1 e^{b_0 t} + \sum_{k=0}^n c_k t^k
+\end{equation*}
+
+for a given $n$. For $\Lambda_{m,p}(n)$ we have $b_0=-m\ln(1-p)$, $b_1=(1-p)^{n-1}$, $c_0=-1$, $c_n=\frac{(mp)^{n-1}}{(n-1)!}m\ln(1-p)$, and $c_k = m^k (m\ln(1-p)+k-1) \sum_{j=k}^{n-1}\frac{p^j}{j!}s(j,k)$ for $2 \leq k\leq n-1$. For $\lambda(n)$ we have $b_0 = b_1 = 1$, $c_n = -((n-1)!)^{-1}$, and $c_k = -(k!)^{-1}$ for $0\leq k \leq n-1$.
+
+To solve Equation \ref{eq: base eq} exactly requires Lagrange Inversion. 
+
+\begin{thm} \label{thm: lagrange inversion}
+The compositional inverse of $f$ around $a$ is given by
+\begin{equation*}
+    f^{-1}(t) = a + \sum_{n\geq1}\frac{g_n}{n!}(t-f(a))^n
+\end{equation*}
+where 
+\begin{equation*}
+    g_n = \lim_{t \to a}\frac{d^{n-1}}{dx^{n-1}}\left(\frac{t-a}{f(t)-f(a)}\right)^{n}.
+\end{equation*}    
+\end{thm}
+
+Let $f_n(t)$ be 
+\begin{equation*}
+    f_n(t) = b_1 e^{b_0 t} + \sum_{k=0}^n c_k t^k
+\end{equation*}
+
+and $h_n(t)$ be
+\begin{equation*}
+    h_n(t) = \frac{f_n(t)-f_n(a)}{t-a} = \frac{b_1 e^{b_0 t} - b_1 e^{b_0 a}}{t-a} - \sum_{k=1}^n c_k \sum_{j=0}^{k-1}x^i a^{k-1-i} = \frac{b_1 e^{b_0 t} - b_1 e^{b_0 a}}{t-a} - \sum_{k=0}^{n-1}\sum_{i=k+1}^{n}c_i a^{k-1-i} x^{k}.
+\end{equation*}
+
+We can rewrite $g_n$ using Faa di Bruno's formula to give 
+\begin{equation*}
+    g_n = \sum_{k=1}^{n-1}(-1)^k\frac{(n-1+k)!}{(n-1)!h_n(a)^{n+k}}B_{n-1,k
+    }(h_n'(a), h_n''(a), \dots, h_n^{(n-k)}(a))
+\end{equation*}
+
+where $B_{n,k}(x_1, x_2, \dots, x_{n-k+1})$ are the partial Bell Polynomials. This gives a closed form following the computation of $\lim_{t \to a}h_n^{(j)}(t) = h_n^{(j)}(a)$, which can be written as
+
+\begin{equation*}
+    h_n^{(j)}(a) = \frac{b_1 b_0^j e^{b_0 a}}{j+1} - \sum_{k=j}^{n-1} \frac{k!}{(k-j)!} \sum_{i=k}^{n-1} c_{i+1} a^{i-j}.
+\end{equation*}
+
+\begin{eqnarray*}
+    \sum_{j \geq 1} h_n^{(j)}(a) \frac{x^j}{j!} & = & \sum_{j \geq 1} \frac{b_1 b_0^j e^{b_0 a}}{j+1} \frac{x^j}{j!} - \sum_{j \geq 1}\sum_{k=j}^{n-1} \frac{k!}{(k-j)!} \sum_{i=k}^{n-1} c_{i+1} a^{i-j}\frac{x^j}{j!} \\
+    & = & \frac{b_1 e^{b_0 a}}{b_0 x} \sum_{j \geq 1} \frac{(b_0 x)^{j+1}}{(j+1)!} - \sum_{j = 1}^{n-1}\sum_{k=j}^{n-1} \binom{k}{j} \sum_{i=k}^{n-1} c_{i+1} a^{i-j}x^j\\
+    & = & \frac{b_1 e^{b_0 a}}{b_0 x} (\exp(b_0 x) - b_0 x -1) - \sum_{j = 1}^{n-1}\sum_{k=j}^{n-1} \binom{k}{j} \sum_{i=k}^{n-1} c_{i+1} a^{i-j}x^j\\
+\end{eqnarray*}
+
+\begin{eg}
+    For $\lambda(2)$ we have that 
+
+    \begin{eqnarray*}
+        \sum_{j \geq 1} h_n^{(j)}(a) \frac{x^j}{j!} & = & \frac{1}{x}e^{x+2} + x -e^2 - \frac{e^2}{x}  \\
+    \end{eqnarray*}
+    
+\end{eg}
+
+Using partial Bell polynomial identities allows for exact expressions of $\lambda(2)$ and $\lambda(3)$, namely
+
+\begin{equation*}
+    \lambda(2) = \frac{e^2-3}{e^2-5} - \sum_{n \geq 1}\left(\sum_{i=1}^{n}\sum_{j=0}^i\sum_{k=0}^j\frac{(-1)^{n+k}(n+i)!S(n-i+j+k,k)e^{2j}}{(n+1)!(i-j)!(j-k)!(n-i+j+k)!(e^2-5)^{i}}\right) \left(\frac{e^2-7}{e^2-5} \right)^{n+1}
+\end{equation*}
+
+and
+
+\begin{equation*}
+    \lambda(3) = \frac{3e^4-71}{e^4-29} - \sum_{n\geq1}g_n\left(\frac{e^4-45}{e^4-29}\right)^{n+1}
+\end{equation*}
+
+where 
+
+\begin{equation*}
+g_n = \sum_{i=1}^n\sum_{j=0}^n\sum_{k=0}^i\sum_{\ell=0}^{k-i}\frac{(-1)^{n-\ell}(n+i)!13^{2k+j-n}S(j+\ell,\ell)e^{4(j-k)}}{(n+1)!(j+\ell)!(i-k-\ell)!k!2^k(e^4-29)^i}\binom{k}{n-j-k}.
+\end{equation*}
+
+Here $\binom{k}{n-j-k}=0$ if $k < n-j-k$ and $S(a,b)$ is the $(a,b)$-th Stirling Number of the second kind, which is defined as 
+$S(a,b) = \frac{1}{b!}\sum_{k=0}^b(-1)^k \binom{b}{k}(b-k)^{a}$.
+
+Simplifying Bell Polynomials for large $n$ becomes increasingly unfeasible. To get an exact expression, generating functions and complex analysis can be used to get an exact expression. First the simpler case must be examined.
+
+
+\begin{thm}\label{thm: lagrange gf}
+    The compositional inverse of $f$ around $a$ can be written as 
+    \begin{equation}
+        f^{-1}(x) = a + G(x-f(a))    
+    \end{equation}
+    
+    where 
+    \begin{eqnarray*}
+        G(x) & = &\frac{1}{\pi} \int_0^\infty e^{-\frac{u^2}{x}} \int_0^{2\pi} \exp\left(is + ue^{-is}\left(\sum_{j\geq0}h^{(j)}(a) \frac{(ue^{is})^j}{j!}\right)\right)ds du \\
+    \end{eqnarray*}
+
+    and $h^{(j)}(a) = \lim_{x \to a}\frac{d^{j}}{dx^{j}}\frac{x-a}{f(x)-f(a)}$.
+\end{thm}
+
+\begin{proof}
+    
+The Lagrange coefficient $g_n = \lim_{x \to a}\frac{d^{n-1}}{dx^{n-1}}\left(\frac{x-a}{f(x)-f(a)}\right)^{n}$, when written using Faa di Bruno's Formula gives 
+
+\begin{equation*}
+    g_n = \sum_{k=0}^{n-1}\frac{n!}{(n-k)!}h(a)^{n-k}B_{n-1,k
+    }(h'(a), h''(a), \dots, h^{(n-k)}(a)).
+\end{equation*}
+
+We then let
+
+\begin{eqnarray*}
+\hat{G}(x,y) & = & \sum_{n,m\geq0}\sum_{j=0}^{m-1} \binom{m}{j}j!B_{n-1,j}(x_1, \dots)h(a)^{m-j} \frac{x^n}{n!}\frac{y^m}{m!} \\
+& = &  \phi(x,y)(\exp(h(a)y)) \\
+& = &  \exp\left(y\left(\sum_{j\geq0}h^{(j)}(a) \frac{x^j}{j!}\right)\right)\\
+\end{eqnarray*}
+
+To extract the off-diagonal we use compute the complex integral
+
+\begin{eqnarray*}
+    \bar{G}(x)& = & \frac{1}{2\pi} \int_0^{2\pi}\frac{e^{is}}{\sqrt{x}}\hat{G}(\sqrt{x}e^{is},\sqrt{x}e^{-is})ds \\
+     & = &\frac{1}{2\pi\sqrt{x}} \int_0^{2\pi} \exp\left(is+\sqrt{x}e^{-is}\left(\sum_{j\geq0}h^{(j)}(a) \frac{(\sqrt{x}e^{is})^j}{j!}\right)\right)ds,\\
+\end{eqnarray*}
+
+which leaves the series with an extra $\frac{1}{n!}$ term. To remove this we convert the series using the following integral transform 
+
+\begin{eqnarray*}
+    G(x)& = & \sum_{n\geq1}g_n \frac{x^n}{n!} = \int_0^\infty xe^{-u}\bar{G}(ux)du \\
+    & = & 2\int_0^\infty ue^{-\frac{u^2}{x}}\bar{G}(u^2)du \\
+    & = &\frac{1}{\pi} \int_0^\infty e^{-\frac{u^2}{x}} \int_0^{2\pi} \exp\left(is + ue^{-is}\left(\sum_{j\geq0}h^{(j)}(a) \frac{(ue^{is})^j}{j!}\right)\right)ds du \\
+\end{eqnarray*}
+
+\end{proof}
+
+This result can be used to derive a double-integral expression for the Lambert W function.
+
+\begin{eg}
+Let $f(x)=xe^x$ at $a=0$, giving $h^{(j)}(a) = \lim_{x \to 0}\frac{d^j}{dx^j}e^{-x} = (-1)^{j}$. We then have that 
+
+\begin{eqnarray*}
+    G(x)& = & \frac{1}{\pi} \int_0^\infty e^{-\frac{u^2}{x}} \int_0^{2\pi} \exp(is + ue^{-is}\exp(-ue^{is}))ds du \\
+\end{eqnarray*}
+
+
+\end{eg}
+
+The following theorem is used to derive exact expressions for $\Lambda_{m,p}(n)$ and $\lambda(n)$, and is a modification of Theorem \ref{thm: lagrange gf}.
+
+\begin{thm}\label{thm: lagrange gf 2}
+The compositional inverse of $f$ around $a$ can be written as 
+
+\begin{equation}
+    f^{-1}(x) = a + G(x-f(a))    
+\end{equation}
+
+where 
+
+\begin{eqnarray*}
+    G(x)& = & \frac{h(a)}{\pi^2 x} \int_0^\infty\int_0^\infty uve^{-v^2-\frac{u^2}{x}}\int_0^{2\pi}\int_0^{2\pi} \exp\left(ive^{it}\left(\sum_{j \geq 1}h^{(j)}(a) \frac{(ue^{is})^j}{j!}\right)\right) \\
+    & * & \left(h(a)-ue^{-is}-ive^{-it}\right)^{-1} ds dt du dv\\
+\end{eqnarray*}
+
+and $h^{(j)}(a) = \lim_{x \to a}\frac{d^{j}}{dx^{j}}\frac{f(x)-f(a)}{x-a}$.
+
+\end{thm}
+
+\begin{proof}
+The Lagrange coefficient $g_n = \lim_{x \to a}\frac{d^{n-1}}{dx^{n-1}}\left(\frac{f(x)-f(a)}{x-a}\right)^{-n}$, when written using Faa di Bruno's Formula gives 
+
+\begin{equation*}
+    g_n = \sum_{k=0}^{n-1}(-1)^k\frac{(n-1+k)!}{(n-1)!h(a)^{n+k}}B_{n-1,k
+    }(h'(a), h''(a), h'''(a), \dots, h^{(n-k)}(a))
+\end{equation*}
+
+We then let
+
+\begin{eqnarray*}
+\hat{G}(x,y) & = & \sum_{n,m\geq0}\binom{n+m}{n}\frac{1}{n!}B_{n,m}(x_1, \dots)h(a)^{-n-m} x^ny^m \\
+& = &  \frac{1}{4\pi^2} \int_0^{2\pi}\int_0^{2\pi} \phi(\sqrt{x}e^{is},\sqrt{y}e^{it})\left(1-\frac{\sqrt{x}e^{-is}}{h(a)}-\frac{\sqrt{y}e^{-it}}{h(a)}\right)^{-1} ds dt\\
+& = &  \frac{1}{4\pi^2} \int_0^{2\pi}\int_0^{2\pi} \exp\left(\sqrt{y}e^{it}\left(\sum_{j \geq 1}h^{(j)}(a) \frac{(\sqrt{x}e^{is})^j}{j!}\right)\right)\left(1-\frac{\sqrt{x}e^{-is}}{h(a)}-\frac{\sqrt{y}e^{-it}}{h(a)}\right)^{-1} ds dt\\
+\end{eqnarray*}
+
+We then have that
+
+\begin{eqnarray*}
+    G(x)& = & \sum_{n\geq0}g_n \frac{x^n}{n!} = \int_0^\infty \int_0^\infty \hat{G}(ux,-v)e^{-u-v}du dv \\
+     & = &\frac{1}{4\pi^2} \int_0^\infty \int_0^\infty e^{-u-v}\int_0^{2\pi}\int_0^{2\pi} \exp\left(i\sqrt{v}e^{it}\left(\sum_{j \geq 1}h^{(j)}(a) \frac{(\sqrt{ux}e^{is})^j}{j!}\right)\right) \\
+     & * & \left(1-\frac{\sqrt{ux}e^{-is}}{h(a)}-\frac{i\sqrt{v}e^{-it}}{h(a)}\right)^{-1} ds dt du dv\\
+\end{eqnarray*}
+
+after the substitutions $u \to \frac{u^2}{x}$  and $v \to v^2$ we have
+
+\begin{eqnarray*}
+    G(x)& = & \frac{h(a)}{\pi^2 x} \int_0^\infty\int_0^\infty uve^{-v^2-\frac{u^2}{x}}\int_0^{2\pi}\int_0^{2\pi} \exp\left(ive^{it}\left(\sum_{j \geq 1}h^{(j)}(a) \frac{(ue^{is})^j}{j!}\right)\right) \\
+    & * & \left(h(a)-ue^{-is}-ive^{-it}\right)^{-1} ds dt du dv.\\
+\end{eqnarray*}
+
+\end{proof}
+
+We can use Theorem \ref{thm: lagrange gf 2} to get an exact expression for 
+
+\begin{eg}
+For $\lambda(2)$ we have that 
+
+\begin{eqnarray*}
+    \sum_{j \geq 1} h_n^{(j)}(a) \frac{x^j}{j!} & = & \frac{1}{x}e^{x+2} + x -e^2 - \frac{e^2}{x}  \\
+\end{eqnarray*} 
+
+and using $a=2$, $h(2)=e^2 -5$ and $x=7-e^2$ we can write
+
+\begin{eqnarray*}
+    \lambda(2)& = & \frac{h(2)}{\pi^2 x} \int_0^\infty\int_0^\infty uve^{-v^2-\frac{u^2}{x}}\int_0^{2\pi}\int_0^{2\pi} \exp\left(ive^{it}(ue^{-is}e^{ue^{is}+2} + ue^{is} -e^2 - e^2 ue^{-is})\right) \\
+    & * & \left(h(2)-ue^{-is}-ive^{-it}\right)^{-1} ds dt du dv.\\
+\end{eqnarray*}
+    
+\end{eg}
+
+\section{Asymptotics for $\mathbf{\lambda(n)}$}
+
+The computation of large values of $\Lambda_{m,p}(n)$ and $\lambda(n)$ can be difficult for the above exact expressions and for modern root finding algorithms. This motivates the following theorem.
+
+\begin{theorem}
+    $$ \lambda(n) = n + \sqrt{n\ln\left(\frac{n}{2\pi}\right)} + \dots$$
+\end{theorem}
+
+\begin{proof}
+    Using the continuous analog of the defining equation of $\lambda(n)$, namely
+    
+    \begin{equation}\label{eq: main relation extended}
+        1 = \int_0^1 e^{(n\ln{(1-u)}+\lambda(n)u)} du,
+    \end{equation}    
+
+we can use Laplace's method of approximation to derive leading terms of $\lambda(n)$.
+
+\begin{equation}\label{eq: main eq}
+    1 = \int_0^1 e^{(n\ln{(t)}+\lambda(n)(1-t))} dt = \int_0^1 e^{nf(n,t))}dt
+\end{equation}
+
+there $f(n,t) = \ln{(t)}+\frac{\lambda(n)}{n}(1-t)$. We start by writing a taylor explansion for $f(n,t)$.
+
+\begin{equation}\label{eq: taylor expansion of f}
+    f(n,t) = \ln \left(\frac{n}{\lambda(n)}\right) + \frac{\lambda(n)}{n} -1 + \sum_{k \geq 2}\left(\frac{\lambda(n)}{n}\right)^k \frac{(-1)^{k-1}}{k}\left(t-\frac{n}{\lambda(n)}\right)^k
+\end{equation}
+
+Equation \ref{eq: taylor expansion of f} is valid for $t \in (\frac{n}{\lambda(n)}-1, \frac{n}{\lambda(n)}+1)$. As $\frac{n}{\lambda(n)} > 0$, we have $(0,1) \subset (\frac{n}{\lambda(n)}-1, \frac{n}{\lambda(n)}+1)$ and can integrate over the region $(0,1)$.
+
+Then for equation \ref{eq: main eq} we have 
+
+\begin{equation}
+    \int_0^1 \exp{(nf(n,t)))} dt = \left(\frac{n}{\lambda(n)}\right)^n e^{\lambda(n)}e^{-n}\int_0^1\exp{\left(n\sum_{k\geq2}\frac{(-1)^{k-1}}{k}\left(\frac{\lambda(n)}{n}t-1\right)^k\right)}dt
+\end{equation}
+
+Let us call the last integral 
+\begin{equation}
+    I(n,\lambda(n)) = \int_0^1\exp{\left(n\sum_{k\geq2}\frac{(-1)^{k-1}}{k}\left(\frac{\lambda(n)}{n}t-1\right)^k\right)}dt
+\end{equation}
+
+and the truncated series 
+
+\begin{equation}
+    I_m(n,\lambda(n)) = \int_0^1\exp{\left(n\sum_{k=2}^m\frac{(-1)^{k-1}}{k}\left(\frac{\lambda(n)}{n}t-1\right)^k\right)}dt
+\end{equation}
+
+Following Laplace's method, we approximate $I$ with $I_2$. We can then say that, for $n \to \infty$, that
+
+$$\left(\frac{n}{\lambda(n)}\right)^ne^{\lambda(n)}e^{-n}I_2(n,\lambda(n)) \to 1$$
+
+or 
+
+\begin{equation}
+    n\ln(n) -n\ln(\lambda(n)) + \lambda(n)-n+\ln(I_2(n,\lambda(n))) \to 0.
+\end{equation}
+
+We then suppose that $\lambda(n) = n + n\delta_1(n)$. We can then say that $\delta_1(n) \to 0$ as $n \to \infty$.
+
+\begin{equation}
+    -n\ln(1+\delta_1(n)) + n\delta_1(n) + \ln(I_2(n,\lambda(n)) \to 0
+\end{equation}
+
+What can be said about $I_2$?
+
+\begin{equation}
+    I_2(n,\lambda(n)) = \int_0^1\exp{\left(-\left(\frac{\lambda(n)}{\sqrt{2n}}t-\sqrt{\frac{n}{2}}\right)^2\right)}dt
+\end{equation}
+
+and written in terms of common functions
+
+\begin{equation}
+    I_2(n,\lambda(n)) = \sqrt{\frac{\pi n}{2}}\frac{1}{\lambda(n)}\left(\text{erf}\left(\sqrt{\frac{n}{2}}\delta_1(n)\right) + \text{erf}\left({\sqrt{\frac{n}{2}}}\right)\right).
+\end{equation}
+
+Therefore, we have
+
+\begin{equation}
+    -n\ln(1+\delta_1(n)) + n\delta_1(n) +\frac{1}{2}\ln\left(\frac{\pi}{2}\right) + \frac{1}{2}\ln(n) - \ln(\lambda(n)) + \ln(2) \to 0
+\end{equation}
+
+as 
+$$\text{erf}\left(\sqrt{\frac{n}{2}}\delta_1(n)\right) + \text{erf}\left({\sqrt{\frac{n}{2}}}\right) \to 2$$
+quickly. We can then write
+
+\begin{equation}
+    -n\ln(1+\delta_1(n)) + n\delta_1(n) - \frac{1}{2}\ln(n) -\ln(1+\delta_1(n)) + \frac{1}{2}\ln(2\pi) \to 0.
+\end{equation}
+
+We can again use the Taylor expansion of $\ln(1+x)$ to get the further approximate
+
+\begin{equation}\label{eq: many taylor series later}
+    \frac{n\delta_1^2(n)}{2} + \frac{1}{2}\ln\left(\frac{2\pi}{n}\right)-\delta_1(n)+\frac{\delta_1^2(n)}{2} \to 0.
+\end{equation}
+
+Finally, completing the square gives the following expression for $\delta_1(n)$
+
+\begin{equation}\label{eq: final best}
+    \delta_1(n) \approx \frac{1}{n+1}\left( 1 + \sqrt{1+(n+1)\ln\left(\frac{n}{2\pi}\right)}\right)
+\end{equation}
+
+and ignoring the $-\ln(1+\delta_1(n))$ in Equation \ref{eq: many taylor series later} gives the cleaner but less accurate expression 
+
+\begin{equation}\label{eq: final clean}
+    \delta_1(n) \approx \sqrt{\frac{1}{n}\ln\left(\frac{n}{2\pi}\right)}
+\end{equation}
+
+\end{proof}
+
+%Sources
+
+% Lagrange Inversion
+% https://en.wikipedia.org/wiki/Lagrange_inversion_theorem#Sketch_of_the_proof 
+
+% Faa di Bruno Formula
+% https://en.wikipedia.org/wiki/Fa%C3%A0_di_Bruno%27s_formula
+
+% General Leibniz Rule
+% https://en.wikipedia.org/wiki/General_Leibniz_rule
+
+% Bell Polynomial Sources
+% https://www.sciencedirect.com/science/article/pii/S0898122109002570
+% https://core.ac.uk/download/pdf/157607015.pdf
+% https://core.ac.uk/download/pdf/82146107.pdf
+% https://www.naturalspublishing.com/files/published/b9g23c8h3731i2.pdf
+% https://en.wikipedia.org/wiki/Bell_polynomials#cite_note-FOOTNOTEComtet1974identity_[3l%22]_on_p._136-5
+
+% articles I found that mention lambda(2)
+% https://www.biorxiv.org/content/10.1101/030718v1.full.pdf
+% https://arxiv.org/pdf/2203.14189v1.pdf
+% https://ee.usc.edu/stochastic-nets/docs/notes-capacity-large-networks.pdf
+% https://users.nber.org/~confer/2008/si2008/EFRSW/kaas.pdf
+% https://studenttheses.uu.nl/bitstream/handle/20.500.12932/10564/Master%27s%20Thesis%20-%20T.K.%20Molenaars%20%28Digital%20version%29.pdf?sequence=1&isAllowed=y
+
+
+% https://www.tandfonline.com/doi/abs/10.1080/01621459.1996.10476696?journalCode=uasa20
+
+%bib stuff
+\newpage
+
+\printbibliography
+
+\end{document}
