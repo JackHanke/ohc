@@ -14,4 +14,4 @@ We then have for large $n$ and small $p$
 
 $$\Lambda_{m,p}(n) \approx \frac{1}{mp}\lambda(n).$$
 
-In this project I produce numerical results for solutions, as well as exact expressions for $n=2$ and $n=3$. A video summary of this work can be found [here](https://www.youtube.com/watch?v=p9B3f4fpmwc&t=608s).
+In this project I produce numerical results for solutions, as well as exact expressions for $n=2$ and $n=3$. A video summary of this work can be found [here](https://www.youtube.com/watch?v=p9B3f4fpmwc&t=608s). A shoutout of my work can be found [here](https://www.youtube.com/channel/UCJ8CoXrSZPIVF2nl7Hjn1Pg/community?lb=Ugkxao9J1il0Mg9nF58JjxoNQRgmaNzHjijP). 
